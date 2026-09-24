@@ -1,0 +1,101 @@
+# Quebec camp. Exports come out of an older French-language system: Latin-1,
+# semicolon-delimited, day-first dates, decimal commas. Still on v1 of the
+# assets contract.
+tenant_id: chene_rouge
+name: Camp Chêne Rouge
+timezone: America/Toronto
+contact:
+  name: Élise Tremblay
+  email: installations@chenerouge.example.org
+
+defaults:
+  format: {type: csv, encoding: latin-1, delimiter: ";"}
+  parse:
+    date_formats: ["%d/%m/%Y"]
+    timestamp_formats: ["%d/%m/%Y %H:%M"]
+    decimal_separator: ","
+
+feeds:
+  buildings:
+    contract: buildings@1
+    files: "batiments*.csv"
+    columns:
+      Code du bâtiment: building_code
+      Nom: building_name
+      Type: building_type
+      Capacité: capacity
+      Année de construction: year_built
+    values:
+      building_type:
+        Chalet: cabin
+        Salle à manger: dining
+        Plage: waterfront
+        Activités: program
+        Administration: admin
+        Infirmerie: health
+        Atelier: maintenance
+        Magasin: store
+        Autre: other
+
+  assets:
+    contract: assets@1
+    files: "equipements*.csv"
+    columns:
+      No d'inventaire: asset_tag
+      Description: asset_name
+      Bâtiment: building_code
+      Date d'achat: purchased_on
+      Prix d'achat: purchase_price
+
+  staff:
+    contract: staff@1
+    files: "personnel*.csv"
+    columns:
+      Matricule: staff_code
+      Prénom: first_name
+      Nom: last_name
+      Poste: role
+      Courriel: email
+      Date d'embauche: start_date
+      Actif: is_active
+    values:
+      role:
+        Direction: director
+        Entretien: maintenance
+        Sauveteur: waterfront
+        Cuisine: kitchen
+        Moniteur: counselor
+        Infirmier: health
+        Magasin: store
+        Bureau: admin
+      is_active:
+        Oui: "true"
+        Non: "false"
+
+  commissary_transactions:
+    contract: commissary_transactions@1
+    files: "ventes_*.csv"
+    columns:
+      No de transaction: transaction_id
+      Ligne: line_number
+      Date et heure: sold_at
+      Magasin: store_building_code
+      Caissier: cashier_staff_code
+      CUP: sku
+      Article: item_name
+      Catégorie: item_category
+      Qté: quantity
+      Prix unitaire: unit_price
+      Mode de paiement: payment_method
+    values:
+      item_category:
+        Collation: snack
+        Boisson: drink
+        Vêtements: apparel
+        Hygiène: toiletries
+        Fournitures: supplies
+        Souvenirs: souvenir
+      payment_method:
+        Compte campeur: camper_account
+        Comptant: cash
+        Carte: card

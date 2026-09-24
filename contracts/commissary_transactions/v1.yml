@@ -1,0 +1,48 @@
+feed: commissary_transactions
+version: 1
+description: Line items from the camp store point of sale.
+primary_key: [transaction_id, line_number]
+
+fields:
+  transaction_id:
+    type: string
+    required: true
+  line_number:
+    type: integer
+    required: true
+    min: 1
+    max: 100
+  sold_at:
+    type: timestamp
+    required: true
+  store_building_code:
+    type: string
+    required: true
+    references: buildings.building_code
+  cashier_staff_code:
+    type: string
+    references: staff.staff_code
+  sku:
+    type: string
+    required: true
+  item_name:
+    type: string
+    required: true
+  item_category:
+    type: string
+    required: true
+    allowed: [snack, drink, apparel, toiletries, supplies, souvenir]
+  quantity:
+    type: integer
+    required: true
+    min: 1
+    max: 50
+  unit_price:
+    type: decimal
+    required: true
+    min: 0
+    max: 200
+  payment_method:
+    type: string
+    required: true
+    allowed: [camper_account, cash, card]

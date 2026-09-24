@@ -1,0 +1,44 @@
+feed: assets
+version: 2
+description: >
+  Equipment tracked for maintenance. v2 adds a required category and status
+  so work orders can be rolled up by system, and renames purchase_price to
+  purchase_cost.
+primary_key: [asset_tag]
+
+fields:
+  asset_tag:
+    type: string
+    required: true
+    pattern: "^[A-Z0-9][A-Z0-9-]{1,19}$"
+  asset_name:
+    type: string
+    required: true
+  category:
+    type: string
+    required: true
+    allowed: [hvac, plumbing, electrical, watercraft, kitchen, vehicle, recreation, grounds, safety, other]
+  building_code:
+    type: string
+    required: true
+    references: buildings.building_code
+  purchased_on:
+    type: date
+  purchase_cost:
+    type: decimal
+    min: 0
+    max: 500000
+  status:
+    type: string
+    required: true
+    allowed: [in_service, needs_repair, out_of_service, retired]
+
+# How a record that passed v1 becomes a v2 record, so clients can move to v2
+# on their own schedule.
+upgrade_from:
+  1:
+    rename:
+      purchase_price: purchase_cost
+    defaults:
+      category: other
+      status: in_service

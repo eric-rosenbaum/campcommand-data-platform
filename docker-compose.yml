@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: campcommand
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "${CAMPCOMMAND_DB_PORT:-5443}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d campcommand"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  airflow:
+    profiles: ["airflow"]
+    build:
+      context: .
+      dockerfile: airflow/Dockerfile
+    command: standalone
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      CAMPCOMMAND_DB_HOST: postgres
+      CAMPCOMMAND_DB_PORT: "5432"
+      CAMPCOMMAND_REPO_ROOT: /opt/campcommand
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/campcommand/airflow/dags
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/campcommand/airflow/dags
+      - ./warehouse:/opt/campcommand/warehouse
+      - ./clients:/opt/campcommand/clients
+      - ./contracts:/opt/campcommand/contracts
+      - ./landing:/opt/campcommand/landing
+      - ./reports:/opt/campcommand/reports
+
+volumes:
+  pgdata:

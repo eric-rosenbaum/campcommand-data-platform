@@ -1,0 +1,26 @@
+feed: buildings
+version: 1
+description: Every structure on the property. Work orders, assets and store sales all hang off a building.
+primary_key: [building_code]
+
+fields:
+  building_code:
+    type: string
+    required: true
+    pattern: "^[A-Z0-9][A-Z0-9-]{0,11}$"
+    label: building code
+  building_name:
+    type: string
+    required: true
+  building_type:
+    type: string
+    required: true
+    allowed: [cabin, dining, waterfront, program, admin, health, maintenance, store, other]
+  capacity:
+    type: integer
+    min: 0
+    max: 500
+  year_built:
+    type: integer
+    min: 1850
+    max: 2100

@@ -1,0 +1,30 @@
+feed: staff
+version: 1
+description: Seasonal and year-round staff who can be assigned work or ring up sales.
+primary_key: [staff_code]
+
+fields:
+  staff_code:
+    type: string
+    required: true
+    pattern: "^[A-Z0-9-]{2,12}$"
+    label: staff ID
+  first_name:
+    type: string
+    required: true
+  last_name:
+    type: string
+    required: true
+  role:
+    type: string
+    required: true
+    allowed: [director, maintenance, waterfront, kitchen, counselor, health, store, admin]
+  email:
+    type: string
+    pattern: "^[^@\\s]+@[^@\\s]+\\.[a-z]{2,}$"
+  start_date:
+    type: date
+    required: true
+  is_active:
+    type: boolean
+    required: true

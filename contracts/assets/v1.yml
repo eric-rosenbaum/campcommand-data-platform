@@ -1,0 +1,23 @@
+feed: assets
+version: 1
+description: Equipment tracked for maintenance.
+primary_key: [asset_tag]
+
+fields:
+  asset_tag:
+    type: string
+    required: true
+    pattern: "^[A-Z0-9][A-Z0-9-]{1,19}$"
+  asset_name:
+    type: string
+    required: true
+  building_code:
+    type: string
+    required: true
+    references: buildings.building_code
+  purchased_on:
+    type: date
+  purchase_price:
+    type: decimal
+    min: 0
+    max: 500000

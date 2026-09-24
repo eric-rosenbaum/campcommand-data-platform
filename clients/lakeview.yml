@@ -1,0 +1,107 @@
+tenant_id: lakeview
+name: Lakeview Camp
+timezone: America/Detroit
+contact:
+  name: Marcus Bell
+  email: ops@lakeviewcamp.example.org
+
+feeds:
+  buildings:
+    contract: buildings@1
+    files: "lakeview_facilities*.xlsx"
+    format: {type: excel, sheet: Buildings, header_row: 1}
+    columns:
+      ID: building_code
+      Name: building_name
+      Category: building_type
+      Capacity: capacity
+      Constructed: year_built
+    values:
+      building_type:
+        Bunk: cabin
+        Dining: dining
+        Waterfront: waterfront
+        Activity: program
+        Admin: admin
+        Infirmary: health
+        Maintenance: maintenance
+        Canteen: store
+        Misc: other
+
+  assets:
+    contract: assets@2
+    files: "lakeview_assets*.xlsx"
+    format: {type: excel, sheet: Assets, header_row: 2}
+    columns:
+      Asset ID: asset_tag
+      Asset: asset_name
+      Type: category
+      Building ID: building_code
+      In Service Date: purchased_on
+      Purchase Price: purchase_cost
+      Status: status
+    values:
+      category:
+        HVAC: hvac
+        Plumbing: plumbing
+        Electrical: electrical
+        Watercraft: watercraft
+        Kitchen: kitchen
+        Vehicle: vehicle
+        Recreation: recreation
+        Grounds: grounds
+        Safety: safety
+        Other: other
+      status:
+        Active: in_service
+        Repair: needs_repair
+        Offline: out_of_service
+        Disposed: retired
+
+  staff:
+    contract: staff@1
+    files: "lakeview_staff*.xlsx"
+    format: {type: excel, sheet: Staff, header_row: 1}
+    columns:
+      "Staff #": staff_code
+      First Name: first_name
+      Last Name: last_name
+      Job: role
+      Email Address: email
+      Hire Date: start_date
+      Status: is_active
+    values:
+      role:
+        Director: director
+        Facilities: maintenance
+        Waterfront: waterfront
+        Food Service: kitchen
+        Cabin Counselor: counselor
+        Health: health
+        Canteen: store
+        Office: admin
+      is_active:
+        Active: "true"
+        Inactive: "false"
+
+  commissary_transactions:
+    contract: commissary_transactions@1
+    files: "lakeview_store_*.csv"
+    format: {type: csv, encoding: utf-8}
+    columns:
+      txn_id: transaction_id
+      line_no: line_number
+      ts: sold_at
+      location: store_building_code
+      clerk: cashier_staff_code
+      sku: sku
+      description: item_name
+      dept: item_category
+      qty: quantity
+      unit_price: unit_price
+      payment: payment_method
+    values:
+      payment_method:
+        ACCOUNT: camper_account
+        CASH: cash
+        CARD: card
