@@ -1,0 +1,26 @@
+campcommand:
+  target: "{{ env_var('DBT_TARGET', 'local') }}"
+  outputs:
+    # Production.
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', '') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', 'SVC_CAMPCOMMAND_DBT') }}"
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH', '') }}"
+      role: transformer
+      warehouse: transforming
+      database: campcommand
+      schema: analytics
+      threads: 8
+      client_session_keep_alive: false
+
+    # Postgres in Docker, for running the project without a Snowflake account.
+    local:
+      type: postgres
+      host: "{{ env_var('CAMPCOMMAND_DB_HOST', 'localhost') }}"
+      port: "{{ env_var('CAMPCOMMAND_DB_PORT', '5443') | as_number }}"
+      dbname: "{{ env_var('CAMPCOMMAND_DB_NAME', 'campcommand') }}"
+      user: transformer
+      password: transformer
+      schema: analytics
+      threads: 4

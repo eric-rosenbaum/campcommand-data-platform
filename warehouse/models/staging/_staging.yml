@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: stg_raw__buildings
+    description: Latest version of each building, per tenant.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [tenant_id, building_code]
+
+  - name: stg_raw__assets
+    description: >
+      Latest version of each asset. Rows loaded under assets v1 were upgraded
+      to v2 at ingest, so category and status are always populated.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [tenant_id, asset_tag]
+    columns:
+      - name: asset_category
+        data_tests: [not_null]
+      - name: asset_status
+        data_tests: [not_null]
+
+  - name: stg_raw__staff
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [tenant_id, staff_code]
+
+  - name: stg_raw__commissary_transactions
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [tenant_id, transaction_id, line_number]
+
+  - name: stg_raw__app_events
+    description: Typed app events, one row per uploaded copy.
+    columns:
+      - name: event_id
+        data_tests: [not_null]
+      - name: event_at
+        description: >
+          When the event happened, in UTC. The device's timestamp, unless the
+          device clock was ahead of the server, in which case the upload time.

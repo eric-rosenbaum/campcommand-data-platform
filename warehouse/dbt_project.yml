@@ -1,0 +1,54 @@
+name: campcommand
+version: "1.0.0"
+profile: campcommand
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+
+packages-install-path: "{{ env_var('DBT_PACKAGES_INSTALL_PATH', 'dbt_packages') }}"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # An event that shows up more than this long after it happened counts as late.
+  late_arrival_minutes: 60
+  # How far back each incremental run re-reads raw events, to be safe
+  # against uploads that land slightly out of received_at order.
+  event_lookback_days: 3
+
+on-run-end:
+  - "{{ grant_tenant_access(schemas) }}"
+
+models:
+  campcommand:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+    marts:
+      +materialized: table
+      +post-hook: "{{ apply_tenant_isolation() }}"
+      +grants:
+        select: ["platform_admin", "tenant_reader"]
+      core:
+        +schema: core
+      reporting:
+        +schema: reporting
+    monitoring:
+      +schema: monitoring
+      +materialized: table
+      +post-hook: "{{ apply_tenant_isolation() }}"
+      +grants:
+        select: ["platform_admin", "tenant_reader"]
+
+seeds:
+  campcommand:
+    +schema: security
+    tenant_access:
+      +post-hook: "{{ create_tenant_policy() }}"
+      +grants:
+        select: ["platform_admin", "tenant_reader"]

@@ -1,0 +1,4 @@
+warehouse/target/
+warehouse/dbt_packages/
+warehouse/tests/generic/
+warehouse/bootstrap/

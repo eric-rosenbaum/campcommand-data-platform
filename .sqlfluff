@@ -1,0 +1,42 @@
+[sqlfluff]
+dialect = postgres
+templater = dbt
+max_line_length = 110
+# LT05 is off because it measures lines after dbt macros like datediff()
+# have been expanded, which says nothing about the source.
+exclude_rules = ST06, AM04, RF03, RF04, LT05
+large_file_skip_byte_limit = 50000
+
+[sqlfluff:templater:dbt]
+project_dir = warehouse
+profiles_dir = warehouse
+
+[sqlfluff:indentation]
+tab_space_size = 4
+indented_joins = false
+indented_using_on = true
+allow_implicit_indents = true
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.identifiers]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.types]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:aliasing.table]
+aliasing = explicit
+
+[sqlfluff:rules:aliasing.column]
+aliasing = explicit
+
+[sqlfluff:rules:ambiguous.column_references]
+group_by_and_order_by_style = implicit

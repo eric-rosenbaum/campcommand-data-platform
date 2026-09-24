@@ -1,0 +1,30 @@
+version: 2
+
+seeds:
+  - name: tenants
+    description: One row per camp on the platform.
+    config:
+      column_types:
+        onboarded_on: date
+    columns:
+      - name: tenant_id
+        data_tests: [unique, not_null]
+      - name: timezone
+        description: IANA zone. Local dates in every mart are computed in this zone.
+        data_tests: [not_null]
+
+  - name: tenant_access
+    description: >
+      Which database roles may read which tenant's rows. Both the Postgres
+      RLS policies and the Snowflake row access policy read this table, so
+      granting a new reader is one row here plus a role grant.
+    columns:
+      - name: role_name
+        data_tests: [unique, not_null]
+      - name: tenant_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('tenants')
+                field: tenant_id
