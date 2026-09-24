@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: int_app_events_deduplicated
+    description: One row per event, first uploaded copy wins.
+    columns:
+      - name: event_id
+        data_tests: [unique, not_null]
+      - name: arrival_lag_minutes
+        description: Minutes between the event happening and the server receiving it.
+      - name: _loaded_at
+        description: >
+          Start time of the dbt run that added the row. Downstream incremental
+          models use it to find events added since they last ran.
+
+  - name: int_work_order_events
+    description: Work order lifecycle events.

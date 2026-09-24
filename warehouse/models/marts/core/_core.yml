@@ -1,0 +1,130 @@
+version: 2
+
+models:
+  - name: dim_tenant
+    description: One row per camp.
+    columns:
+      - name: tenant_id
+        data_tests: [unique, not_null]
+
+  - name: dim_building
+    description: >
+      Conformed building dimension. Rows with is_inferred = true are
+      buildings that events refer to but the camp's building list doesn't
+      (yet) include.
+    columns:
+      - name: building_key
+        data_tests: [unique, not_null]
+      - name: is_inferred
+        data_tests: [not_null]
+
+  - name: dim_asset
+    columns:
+      - name: asset_key
+        data_tests: [unique, not_null]
+      - name: building_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_building')
+                field: building_key
+
+  - name: dim_staff
+    columns:
+      - name: staff_key
+        data_tests: [unique, not_null]
+
+  - name: dim_date
+    columns:
+      - name: date_day
+        data_tests: [unique, not_null]
+
+  - name: fct_maintenance_events
+    description: >
+      One row per work order lifecycle event, deduplicated, dated by when it
+      happened (event_at) rather than when it arrived (received_at).
+    columns:
+      - name: event_id
+        data_tests: [unique, not_null]
+      - name: tenant_id
+        data_tests: [not_null]
+      - name: building_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_building')
+                field: building_key
+      - name: asset_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_asset')
+                field: asset_key
+      - name: staff_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_staff')
+                field: staff_key
+      - name: event_action
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["opened", "assigned", "started", "completed"]
+
+  - name: fct_work_orders
+    description: >
+      Accumulating snapshot, one row per work order. Rebuilt from all of a
+      work order's events whenever a new one arrives, so arrival order never
+      matters. building_key and friends come from the opening event and are
+      null until it arrives (is_missing_open_event).
+    columns:
+      - name: work_order_key
+        data_tests: [unique, not_null]
+      - name: status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["open", "assigned", "in_progress", "completed"]
+      - name: building_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_building')
+                field: building_key
+
+  - name: fct_waterfront_checks
+    description: Pool and lake water tests, one row per check.
+    columns:
+      - name: event_id
+        data_tests: [unique, not_null]
+      - name: building_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_building')
+                field: building_key
+
+  - name: fct_commissary_sales
+    description: Camp store sales, one row per transaction line.
+    columns:
+      - name: sale_line_key
+        data_tests: [unique, not_null]
+      - name: building_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_building')
+                field: building_key
+      - name: staff_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_staff')
+                field: staff_key
+      - name: line_amount
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0

@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: rpt_maintenance_daily
+    description: >
+      Work order activity per camp, building and local day. Late events
+      reopen the day they belong to.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [tenant_id, activity_date, building_key]
+
+  - name: rpt_commissary_daily
+    description: Store revenue per camp, day and item category.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [tenant_id, sold_date_local, item_category]
+
+  - name: rpt_work_order_backlog
+    description: Work orders that haven't been completed.
+    columns:
+      - name: work_order_id
+        data_tests: [not_null]
