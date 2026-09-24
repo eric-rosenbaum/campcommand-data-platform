@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Camp Tall Pines: assets upload</title>
+<style>
+  :root { --ink: #1d2433; --muted: #5b6475; --line: #e3e6ec; --bg: #f7f8fa; --warn: #a35200; --bad: #b42318; --ok: #1a7f37; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 20px 64px; }
+  header p { color: var(--muted); margin: 4px 0 0; }
+  h1 { font-size: 22px; margin: 0; }
+  h2 { font-size: 17px; margin: 0 0 4px; }
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 24px 0; }
+  .stat { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
+  .stat b { display: block; font-size: 24px; }
+  .stat span { color: var(--muted); font-size: 13px; }
+  .stat.loaded b { color: var(--ok); }
+  .stat.held b { color: var(--warn); }
+  section { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; margin: 16px 0; }
+  section.bad { border-color: #f1b8b3; }
+  .count { color: var(--muted); font-weight: normal; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; table-layout: fixed; }
+  th:nth-child(1) { width: 56px; }
+  th:nth-child(2) { width: 170px; }
+  th, td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  td.row { white-space: nowrap; color: var(--muted); }
+  td.value { overflow-wrap: anywhere; }
+  code { background: var(--bg); padding: 1px 5px; border-radius: 4px; }
+  .next { background: #fff8eb; border-color: #f5d9a8; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 32px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Camp Tall Pines: assets upload</h1>
+    <p>File <code>Equipment List.xlsx</code></p>
+  </header>
+
+  <div class="summary">
+    <div class="stat"><b>131</b><span>rows received</span></div>
+    <div class="stat loaded"><b>118</b><span>loaded</span></div>
+    <div class="stat held"><b>13</b><span>held back to fix</span></div>
+  </div>
+
+  <section class="next">
+    <h2>What to do</h2>
+    <p>
+      The rows below weren't loaded. Everything else was.
+<code>20260924-090451_assets_9967f4ef_rows_to_fix.csv</code> has just those rows, laid out like your file, with a note on each.      Fix them in your spreadsheet and export again. You can send the whole file; rows we already have won't be duplicated.
+    </p>
+  </section>
+
+  <section>
+    <h2>Values we couldn't read: Purchased <span class="count">(1)</span></h2>
+    <table>
+      <thead><tr><th>Row</th><th>Value</th><th>Problem</th></tr></thead>
+      <tbody>
+        <tr><td class="row">118</td><td class="value">sometime in 2019</td><td>'sometime in 2019' in Purchased: expected a date.</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Values we don't recognise: System <span class="count">(1)</span></h2>
+    <table>
+      <thead><tr><th>Row</th><th>Value</th><th>Problem</th></tr></thead>
+      <tbody>
+        <tr><td class="row">92</td><td class="value">Pool Stuff</td><td>'Pool Stuff' isn't a recognised System. Check the spelling or ask us to add it.</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Numbers outside the allowed range: Cost <span class="count">(1)</span></h2>
+    <table>
+      <thead><tr><th>Row</th><th>Value</th><th>Problem</th></tr></thead>
+      <tbody>
+        <tr><td class="row">63</td><td class="value">-150</td><td>Cost is -150; it has to be between 0 and 500000.</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Required values left blank: Tag # <span class="count">(1)</span></h2>
+    <table>
+      <thead><tr><th>Row</th><th>Value</th><th>Problem</th></tr></thead>
+      <tbody>
+        <tr><td class="row">28</td><td class="value">(blank)</td><td>Tag # is blank, and every row needs one.</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Codes that don't match your other lists: Location <span class="count">(1)</span></h2>
+    <table>
+      <thead><tr><th>Row</th><th>Value</th><th>Problem</th></tr></thead>
+      <tbody>
+        <tr><td class="row">124</td><td class="value">ZZ-99</td><td>Location 'ZZ-99' doesn't match anything in your buildings list. Fix the code, or send the buildings list first.</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Rows waiting on a fix somewhere else: Location <span class="count">(8)</span></h2>
+    <table>
+      <thead><tr><th>Row</th><th>Value</th><th>Problem</th></tr></thead>
+      <tbody>
+        <tr><td class="row">21</td><td class="value">TP-006</td><td>Location 'TP-006' is on your buildings list, but that row was held back with its own problem. This row will load once it's fixed.</td></tr>
+        <tr><td class="row">22</td><td class="value">TP-006</td><td>Location 'TP-006' is on your buildings list, but that row was held back with its own problem. This row will load once it's fixed.</td></tr>
+        <tr><td class="row">23</td><td class="value">TP-006</td><td>Location 'TP-006' is on your buildings list, but that row was held back with its own problem. This row will load once it's fixed.</td></tr>
+        <tr><td class="row">24</td><td class="value">TP-006</td><td>Location 'TP-006' is on your buildings list, but that row was held back with its own problem. This row will load once it's fixed.</td></tr>
+        <tr><td class="row">56</td><td class="value">TP-018</td><td>Location 'TP-018' is on your buildings list, but that row was held back with its own problem. This row will load once it's fixed.</td></tr>
+        <tr><td class="row">57</td><td class="value">TP-018</td><td>Location 'TP-018' is on your buildings list, but that row was held back with its own problem. This row will load once it's fixed.</td></tr>
+        <tr><td class="row">58</td><td class="value">TP-018</td><td>Location 'TP-018' is on your buildings list, but that row was held back with its own problem. This row will load once it's fixed.</td></tr>
+        <tr><td class="row">59</td><td class="value">TP-018</td><td>Location 'TP-018' is on your buildings list, but that row was held back with its own problem. This row will load once it's fixed.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <footer>
+    Sent to Dana Whitaker &lt;facilities@tallpines.example.org&gt; · batch 9967f4ef · Sep 24, 2026 9:04 AM
+  </footer>
+</main>
+</body>
+</html>

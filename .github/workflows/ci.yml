@@ -1,0 +1,116 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CAMPCOMMAND_DB_PORT: "5443"
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: campcommand
+          POSTGRES_PASSWORD: postgres
+        ports: ["5443:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: |
+          pip install -e ".[dev,snowflake]"
+          dbt deps --project-dir warehouse --profiles-dir warehouse
+
+      - name: Lint Python
+        run: |
+          ruff check src tests airflow
+          ruff format --check src tests airflow
+
+      - name: Unit tests
+        run: pytest tests/unit -v
+
+      - name: Render the dbt project for Snowflake
+        run: make snowflake-parse
+
+      - name: Demo, end to end
+        run: |
+          campcommand bootstrap
+          make round1 round2
+
+      - name: Lint SQL
+        run: sqlfluff lint warehouse/models warehouse/tests warehouse/analyses
+
+      - name: Integration tests
+        run: pytest tests/integration -v
+
+      - name: Build docs site
+        run: |
+          dbt docs generate --static --project-dir warehouse --profiles-dir warehouse
+          mkdir -p _site
+          cp warehouse/target/static_index.html _site/index.html
+          cp docs/images/example-error-report.html _site/error-report.html
+
+      - uses: actions/upload-pages-artifact@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: _site
+
+  airflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build image
+        run: docker compose --profile airflow build airflow
+
+      - name: Run every DAG against a fresh warehouse
+        run: |
+          mkdir -p landing reports && chmod 777 landing reports
+          docker compose up -d --wait postgres
+          docker compose --profile airflow run --rm airflow bash -c '
+            set -e
+            campcommand bootstrap
+            campcommand generate > /dev/null
+            airflow db migrate > /dev/null
+            for dag in campcommand_onboarding campcommand_warehouse campcommand_events; do
+              airflow dags test $dag > /tmp/$dag.log 2>&1 || true
+              grep -E "DagRun Finished.*state=success" /tmp/$dag.log > /dev/null \
+                || { echo "$dag failed"; tail -80 /tmp/$dag.log; exit 1; }
+              echo "$dag ok"
+            done
+          '
+
+  docs:
+    if: github.ref == 'refs/heads/main'
+    needs: pipeline
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
