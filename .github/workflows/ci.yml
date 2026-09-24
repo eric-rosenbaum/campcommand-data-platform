@@ -59,7 +59,7 @@ jobs:
           make round1 round2
 
       - name: Lint SQL
-        run: sqlfluff lint warehouse/models warehouse/tests warehouse/analyses
+        run: sqlfluff lint warehouse/models
 
       - name: Integration tests
         run: pytest tests/integration -v

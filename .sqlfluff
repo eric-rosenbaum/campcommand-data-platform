@@ -15,7 +15,7 @@ profiles_dir = warehouse
 tab_space_size = 4
 indented_joins = false
 indented_using_on = true
-allow_implicit_indents = true
+implicit_indents = allow
 
 [sqlfluff:rules:capitalisation.keywords]
 capitalisation_policy = lower

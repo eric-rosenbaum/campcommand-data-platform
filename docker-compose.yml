@@ -31,13 +31,16 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_FOLDER: /opt/campcommand/airflow/dags
       AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"
+      # Project files are mounted read-only; dbt writes its artifacts here instead.
+      DBT_TARGET_PATH: /tmp/dbt/target
+      DBT_LOG_PATH: /tmp/dbt/logs
     ports:
       - "8080:8080"
     volumes:
-      - ./airflow/dags:/opt/campcommand/airflow/dags
-      - ./warehouse:/opt/campcommand/warehouse
-      - ./clients:/opt/campcommand/clients
-      - ./contracts:/opt/campcommand/contracts
+      - ./airflow/dags:/opt/campcommand/airflow/dags:ro
+      - ./warehouse:/opt/campcommand/warehouse:ro
+      - ./clients:/opt/campcommand/clients:ro
+      - ./contracts:/opt/campcommand/contracts:ro
       - ./landing:/opt/campcommand/landing
       - ./reports:/opt/campcommand/reports
 

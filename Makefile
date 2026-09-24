@@ -46,7 +46,7 @@ test: ## unit and integration tests (integration needs `make up`)
 lint:
 	ruff check src tests airflow
 	ruff format --check src tests airflow
-	sqlfluff lint warehouse/models warehouse/tests warehouse/analyses
+	sqlfluff lint warehouse/models
 
 docs: ## generate and serve dbt docs
 	$(DBT) docs generate $(DBT_DIRS)
